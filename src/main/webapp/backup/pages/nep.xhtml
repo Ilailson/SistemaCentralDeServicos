@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="metadata">
+	</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="formListagem">
+			<p:panel header="Alunos NEP - Listagem">
+				
+				<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				paginator="true" value="#{nepBean.listarNep}" var="nep" 
+				rows="7" filteredValue="#{nepBean.nepFiltrado}"
+				>
+					<f:facet name="header">
+						<p:commandButton value="Novo" actionListener="#{nepBean.novo}"
+						oncomplete="PF('dialogo').show();"
+						update=":mensagem :formCadastro:painel"
+						>
+							<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+					
+					<f:facet name="footer">
+					Gerenciamento de alunos NEP
+					</f:facet>
+
+					<p:column headerText="Programa" width="100" styleClass="centralizar">
+						<h:outputText value="#{nep.programa.programa}" />
+						
+						<f:facet name="footer">
+							<h:commandLink action="programa?faces-redirect=true" value="Programas" />
+						</f:facet>
+					</p:column>
+					
+					<p:column headerText="Aluno" filterBy="#{nep.aluno.nome}" sortBy="#{nep.aluno.nome}">
+						<f:facet name="footer">
+							<h:commandLink action="pessoa?faces-redirect=true" value="Cadastrar Aluno" />
+						</f:facet>
+						<h:outputText value="#{nep.aluno.nome}" />
+					</p:column>
+					
+					<p:column headerText="Usuário" filterBy="#{nep.aluno.nomeusuario}" width="100"
+						sortBy="#{nep.aluno.nomeusuario}">
+						<h:outputText value="#{nep.aluno.nomeusuario}" />
+					</p:column>
+					
+					<p:column headerText="P.Inicial" filterBy="" width="60"
+						sortBy="">
+						<h:outputText value="#{nep.dataInicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="America/Sao_Paulo"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="P.Fim" filterBy="" width="60"
+						sortBy="">
+						<h:outputText value="#{nep.dataFim}" >
+							<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="America/Sao_Paulo"/>
+						</h:outputText>
+					</p:column>
+					
+					
+
+					<p:column headerText="Opções" width="75" styleClass="centralizar">
+						<p:commandButton icon="ui-icon-trash" actionListener="#{nepBean.excluir}"
+						update=":mensagem :formListagem:tabela"
+						>
+							<p:confirm header="Confirmação" message="Deseja excluir a cidade"
+							icon="ui-icon-alert" />
+							
+							<f:attribute name="nepSelecionado" value="#{nep}"/>
+						</p:commandButton>
+
+						<p:commandButton icon="ui-icon-pencil" actionListener="#{nepBean.editar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela"
+						oncomplete="PF('dialogo').show();"
+						>
+							<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							<f:attribute name="nepSelecionado" value="#{nep}"/>
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+				
+				<!-- ++++++++++++++DIALOGO  EXCLUSÃO +++++++++++++++++++++++++ -->
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</p:panel>
+		</h:form>
+
+		<!-- +++++++++++++++++++++Cadastrar Cidades+++++++++++++++++++++++ -->
+		<p:dialog header="Alunos NEP - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" global="true" closable="false">
+			<h:form id="formCadastro">
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel value="Programa:" />
+					<p:selectOneMenu filter="true" value="#{nepBean.nep.programa}"
+					converter="omnifaces.SelectItemsConverter">
+						<f:selectItem itemLabel="[-Selecione-]" noSelectionOption="true"/>
+						
+						<f:selectItems value="#{nepBean.listarPrograma}" var="programa" 
+						itemValue="#{programa}" itemLabel="#{programa.programa}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Aluno:" />
+					<p:selectOneMenu filter="true" value="#{nepBean.nep.aluno}"
+					converter="omnifaces.SelectItemsConverter">
+						<f:selectItem itemLabel="[-Selecione-]" noSelectionOption="true"/>	
+						<f:selectItems value="#{nepBean.listarPessoas}" var="pessoa" 
+						itemValue="#{pessoa}" itemLabel="#{pessoa.nome}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Função:" />
+					<p:selectOneRadio value="#{nepBean.nep.vinculo}" 
+					converter="omnifaces.SelectItemsConverter"
+					>
+						<f:selectItem itemValue="MESTRADO" itemLabel="mestrado"/>
+						<f:selectItem itemValue="BOLSISTA" itemLabel="Bolsita"/>
+						<f:selectItem itemValue="DOUTORADO" itemLabel="Doutorado"/>
+						<f:selectItem itemValue="FIOTEC" itemLabel="Contratado Fiotec"/>
+					</p:selectOneRadio>
+					
+			
+					<p:outputLabel value="Periodo Inicial:" />
+					<p:calendar value="#{nepBean.nep.dataInicio}" converterMessage="Data errada"
+					converter="omnifaces.SelectItemsConverter" navigator="true" locale="pt_BR" 
+					>
+							<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="America/Sao_Paulo"/>
+					</p:calendar>
+					
+					<p:outputLabel value="Periodo Final:" />
+					<p:calendar value="#{nepBean.nep.dataFim}" converterMessage="Data errada" 
+					converter="omnifaces.SelectItemsConverter" navigator="true" locale="pt_BR"
+					>
+							<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="America/Sao_Paulo"/>
+					</p:calendar>
+					
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"  actionListener="#{nepBean.salvar}"
+					update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+
+<!-- DIALOGO DE EXCLUSÃO
+Tem que está dentro de um formulário
+ -->
+ 
+ <!-- SelectOneMenu de estados.
+ converter="omnifaces.SelectItemsConverter": signica aquela conversão de Bigdecimal para 
+ String para  poder salvar o código
+  -->
+  
+  
+  <!-- ResetInputAjaxActionListener: Corrige erro ao tentar pedir um novo e editar
+  algo. Para que não  fique solicitando obrigatóriedade.
+      
+      <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+  
+   -->
+   
+   <!--filteredValue="#{nepBean.nepFiltrado}" 
+   Corrige o erro  ao  filtrar e tentar editar e excluir
+    -->
+  

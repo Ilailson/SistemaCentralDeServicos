@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="metadata">
+	</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="formListagem">
+			<p:panel header="Chefias - Listagem">
+				
+				<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				paginator="true" value="#{chefiaBean.listarChefias}" var="chefia" rows="15"
+				filteredValue="#{chefiaBean.chefiaFiltrada}"
+				>
+					<f:facet name="header">
+						<p:commandButton value="Novo" actionListener="#{chefiaBean.novo}"
+						oncomplete="PF('dialogo').show();"
+						update=":mensagem :formCadastro:painel"
+						>
+						
+							<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+					
+					<f:facet name="footer">Gerenciamento de Chefias</f:facet>
+
+					<p:column headerText="Seção" filterBy="#{chefia.secao.sigla}" sortBy="#{chefia.secao.sigla}"
+					styleClass="centralizar">
+						<f:facet name="footer" 	>
+							<h:commandLink action="secao?faces-redirect=true" value="Cadastrar Seção" />
+						</f:facet>
+						
+						<h:outputText value="#{chefia.secao.sigla}"/>
+					</p:column>
+					
+					<p:column headerText="Chefe" filterBy="#{chefia.pessoa.nome}">
+						<f:facet name="footer">
+							<h:commandLink action="pessoa?faces-redirect=true" value="Cadastrar Pessoa" />
+						</f:facet>
+						<h:outputText value="#{chefia.pessoa.nome}" />
+					</p:column>
+					
+					<p:column headerText="Substituto" filterBy="#{chefia.substituto.nome}"
+						sortBy="chefia.substituto.nome">
+						<h:outputText value="#{chefia.substituto.nome}" />
+					</p:column>
+					
+					<p:column headerText="Opções" width="60" styleClass="centralizar">
+						<p:commandButton icon="ui-icon-trash" actionListener="#{chefiaBean.excluir}"
+						update=":mensagem :formListagem:tabela"
+						>
+							<p:confirm header="Confirmação" message="Deseja excluir a cidade"
+							icon="ui-icon-alert" />
+							
+							<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							<f:attribute name="chefiaSelecionado" value="#{chefia}"/>
+						</p:commandButton>
+
+						<p:commandButton icon="ui-icon-pencil" actionListener="#{chefiaBean.editar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela"
+						oncomplete="PF('dialogo').show();"
+						>
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							<f:attribute name="chefiaSelecionado" value="#{chefia}"/>
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+				
+				<!-- ++++++++++++++DIALOGO  EXCLUSÃO +++++++++++++++++++++++++ -->
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</p:panel>
+		</h:form>
+
+		<!-- +++++++++++++++++++++Cadastrar Cidades+++++++++++++++++++++++ -->
+		<p:dialog header="Cidades - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" global="true" closable="false">
+			<h:form id="formCadastro">
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel value="Seção:"/>
+					<p:selectOneMenu filter="true"
+					value="#{chefiaBean.chefia.secao}" 
+					converter="omnifaces.SelectItemsConverter"
+					>
+						<f:selectItem noSelectionOption="true" itemLabel="- Selecione - "/>
+						
+						<f:selectItems value="#{chefiaBean.listarSecoes}" var="secao"  
+						itemValue="#{secao}" itemLabel="#{secao.sigla}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Chefia:"/>
+					<p:selectOneMenu filter="true"
+					value="#{chefiaBean.chefia.pessoa}" converter="omnifaces.SelectItemsConverter"
+					>
+						<f:selectItem noSelectionOption="true" itemLabel="- Selecione - "/>
+						
+						<f:selectItems value="#{chefiaBean.listarPessoas}" var="pessoa"  
+						itemValue="#{pessoa}" itemLabel="#{pessoa.nome}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Substituto:"/>
+					<p:selectOneMenu filter="true"
+					value="#{chefiaBean.chefia.substituto}" converter="omnifaces.SelectItemsConverter"
+					>
+						<f:selectItem noSelectionOption="true" itemLabel="- Selecione - "/>
+						
+						<f:selectItems value="#{chefiaBean.listarPessoas}" var="pessoa"  
+						itemValue="#{pessoa}" itemLabel="#{pessoa.nome}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{chefiaBean.salvar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+
+<!-- Botão novo
+Na hora de chamado  o botão novo como tem chave estrangeira da tabela seçao tem que adicionar o 
+update com o formulário de cadastro conforme abaixo para  poder exibir as seções. 
+
+<p:commandButton value="Novo" actionListener="#{chefiaBean.novo}"
+						oncomplete="PF('dialogo').show();"
+						update=":mensagem :formCadastro:painel"
+ -->
+ 
+
+<!-- DIALOGO DE EXCLUSÃO
+Tem que está dentro de um formulário
+ -->
+ 
+ <!-- SelectOneMenu de estados.
+ converter="omnifaces.SelectItemsConverter": signica aquela conversão de Bigdecimal para 
+ String para  poder salvar o código
+  -->
+  
+  
+  <!-- ResetInputAjaxActionListener: Corrige erro ao tentar pedir um novo e editar
+  algo. Para que não  fique solicitando obrigatóriedade.
+      
+      <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+  
+   -->
+  

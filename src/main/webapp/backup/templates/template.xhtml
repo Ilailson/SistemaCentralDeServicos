@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<ui:define name="metadata" />
+
+<h:head>
+	<p:growl id="mensagem" life="3000" />
+	<h:outputStylesheet library="css" name="style.css" />
+	<h:outputScript library="js" name="scripts.js"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Layout Sistema</title>
+</h:head>
+
+<h:body>
+	<p:layout fullPage="true">
+		<p:layoutUnit position="west" resizable="false" closable="false"
+			collapsible="true" size="150">
+			<h:form>
+				<p:panelMenu>
+					<p:submenu label="Arquivo">
+						<p:menuitem value="Principal" outcome="/pages/chefia.xhtml?faces-redirect=true"/>
+						<p:menuitem value="Sair" 
+						 actionListener="#{autenticacaoBean.encerraSessao}"/>
+					</p:submenu>
+
+					<p:submenu label="Cadastro">
+						<p:menuitem value="Seção" outcome="/pages/secao.xhtml?faces-redirect=true" />
+						<p:menuitem value="Chefia" outcome="/pages/chefia.xhtml?faces-redirect=true" />
+						<p:menuitem value="Pessoa" outcome="/pages/pessoa.xhtml?faces-redirect=true" />
+						<p:menuitem value="Usuário" outcome="/pages/usuario.xhtml?faces-redirect=true" />
+						<p:menuitem value="Programas" outcome="/pages/programa.xhtml?faces-redirect=true" />
+						<p:menuitem value="Processos" outcome="/pages/processo.xhtml?faces-redirect=true" />
+					</p:submenu>
+				</p:panelMenu>
+			</h:form>
+		</p:layoutUnit>
+
+
+		<p:layoutUnit position="center" resizable="false" closable="false"
+			collapsible="false">
+<!-- 			<h:form styleClass="centralizar"> -->
+<!-- 				<p:button outcome="/pages/chefia.xhtml?faces-redirect=true" value="Chefia" -->
+<!-- 					style="margin-left:1cm;" /> -->
+<!-- 				<p:button outcome="/pages/nep.xhtml?faces-redirect=true" value="Nep" -->
+<!-- 					style="margin-left:1cm;" /> -->
+<!-- 				<p:button outcome="/pages/processo.xhtml?faces-redirect=true" value="Processos" -->
+<!-- 					style="margin-left:1cm;" /> -->
+<!-- 				<p:button outcome="/pages/autenticacao.xhtml?faces-redirect=true" value="Trocar Usuário" -->
+<!-- 					style="margin-left:1cm;" /> -->
+<!-- 			</h:form> -->
+<!-- 			<br/> -->
+			<ui:insert name="conteudo" />
+		</p:layoutUnit>
+	</p:layout>
+
+</h:body>
+</html>
+
+<!-- 		<p:layoutUnit position="north" header="Sistema de Vendas" -->
+<!-- 			resizable="false" closable="false" collapsible="false"> -->
+
+<!-- 		</p:layoutUnit> -->
+
+<!-- 		<p:layoutUnit position="south" -->
+<!-- 			header="Desenvolvido por Ilailson Rocha" resizable="false" -->
+<!-- 			closable="false" collapsible="false"> -->
+
+<!-- 		</p:layoutUnit> -->
+
+
+<!-- Definindo uma  mensagem global
+	life:tempo em milisegundos que ficará na  tela. 
+	<p:growl id="msgGlobal" life="3000"/> 
+	  -->
+
+<!--Deixa a página responsiva
+<p:layout fullPage="true">
+  -->

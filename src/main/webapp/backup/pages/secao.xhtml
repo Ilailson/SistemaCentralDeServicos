@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="metadata">
+	</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="formListagem">
+			<p:panel header="Seção - Listagem">
+				
+				<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				paginator="true" value="#{secaoBean.listarSecoes}" var="secao" rows="6"
+				filteredValue="#{secaoBean.secaoFiltrada}"
+				>
+					<f:facet name="header">
+						<p:commandButton value="Novo" actionListener="#{secaoBean.novo}"
+						oncomplete="PF('dialogo').show();"
+						>
+							<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+					
+					<f:facet name="footer">Gerenciamento de Seções</f:facet>
+
+					
+					<p:column headerText="Sigla" filterBy="#{secao.sigla}" sortBy="#{secao.sigla}">
+						<f:facet name="footer">
+							<h:commandLink action="chefia?faces-redirect=true" value="Ir para chefia"/>
+						</f:facet>
+						<h:outputText value="#{secao.sigla}" />
+					</p:column>
+					
+					<p:column headerText="Seção">
+						<h:outputText value="#{secao.nome}" />
+					</p:column>
+					
+
+					<p:column headerText="Opções" width="75" styleClass="centralizar">
+						<p:commandButton icon="ui-icon-trash" actionListener="#{secaoBean.excluir}"
+						update=":mensagem :formListagem:tabela"
+						>
+							<p:confirm header="Confirmação" message="Deseja excluir a seção"
+							icon="ui-icon-alert" />
+							<f:attribute name="sessaoSelecionada" value="#{secao}"/>
+						</p:commandButton>
+
+						<p:commandButton icon="ui-icon-pencil" 
+						actionListener="#{secaoBean.editar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela"
+						oncomplete="PF('dialogo').show();"
+						>
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							<f:attribute name="sessaoSelecionada" value="#{secao}"/>
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+				
+				<!-- ++++++++++++++DIALOGO  EXCLUSÃO +++++++++++++++++++++++++ -->
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</p:panel>
+		</h:form>
+
+		<!-- +++++++++++++++++++++Cadastrar Cidades+++++++++++++++++++++++ -->
+		<p:dialog header="Seções - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" global="true" closable="false">
+			<h:form id="formCadastro">
+				<h:panelGrid id="painel" columns="2">
+
+					<p:outputLabel value="Sigla" for="sig"/>
+					<p:inputText value="#{secaoBean.secao.sigla}" id="sig" />
+					
+					<p:outputLabel value="Seção" for="sec"/>
+					<p:inputText value="#{secaoBean.secao.nome}" id="sec" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{secaoBean.salvar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+
+<!-- DIALOGO DE EXCLUSÃO
+Tem que está dentro de um formulário
+ -->
+ 
+ <!-- SelectOneMenu de estados.
+ converter="omnifaces.SelectItemsConverter": signica aquela conversão de Bigdecimal para 
+ String para  poder salvar o código
+  -->
+  
+  
+  <!-- ResetInputAjaxActionListener: Corrige erro ao tentar pedir um novo e editar
+  algo. Para que não  fique solicitando obrigatóriedade.
+      
+      <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+  
+   -->
+   
+   <!-- filteredValue="#{secaoBean.secaoFiltrada}"
+   Corrige o erro ao tentar editar e excluir
+   1 cria  uma  lista do objeto bean
+   2 adiciona na tabela principal
+    -->
+  

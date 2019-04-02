@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://java.sun.com/jsf/facelets"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui"
+>
+<h:head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Tela Login</title>
+	<h:outputStylesheet library="css" name="style.css"/>
+	<h:outputScript library="js" name="scripts.js"/>
+</h:head>
+
+<h:body>
+	<p:growl id="mensagem"/>
+	
+	<p:dialog 
+	header="autenticacao" resizable="false" 
+	closable="false" visible="true" draggable="false"
+	global="true" 
+	>
+		<h:form styleClass="centralizar"> 
+		<p:graphicImage value="/resources/img/logo.png"/>
+			<h:panelGrid columns="2" styleClass="centralizar">
+				<p:outputLabel value="Usuário:"/>
+				<p:inputText value="#{autenticacaoBean.usuario.pessoa.nomeusuario}"/>
+				
+				<p:outputLabel value="Senha:"/>
+				<p:password value="#{autenticacaoBean.usuario.senha}"/>
+			</h:panelGrid>
+			
+			<h:panelGrid columns="2">
+				<p:outputLabel/>
+				<p:commandButton value="Entrar" update=":mensagem"
+				actionListener="#{autenticacaoBean.autenticar}" 
+				/>
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>
+
+<!-- Essa pagina tem  que ser um html normal e não pode  extender do template -->

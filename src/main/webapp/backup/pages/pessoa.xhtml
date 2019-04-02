@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="metadata">
+	</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="formListagem">
+		<p:panel header="Lista de Pessoas">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				paginator="true" value="#{pessoaBean.listarPessoas}" var="pessoa" rows="8"
+				filteredValue="#{pessoaBean.pessoaFiltrada}"
+				>
+				<f:facet name="header">
+					<p:commandButton value="Novo" action="#{pessoaBean.novo}"
+					oncomplete="PF('dialogo').show();"
+					
+					>
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+				<f:facet name="footer">Gerenciamento de Pessoas</f:facet>
+
+				
+				<p:column headerText="Nome" sortBy="#{pessoa.nome}" filterBy="#{pessoa.nome}">
+					<h:outputText value="#{pessoa.nome}"/>
+				</p:column>
+				
+				<p:column headerText="Usuário de rede" filterBy="#{pessoa.nomeusuario}" sortBy="#{pessoa.nomeusuario}">
+					<h:outputText value="#{pessoa.nomeusuario}"/>
+				</p:column>
+
+
+				<p:column headerText="Opções" styleClass="centralizar" width="75">
+					<p:commandButton icon="ui-icon-trash" actionListener="#{pessoaBean.excluir}"
+					update=":mensagem :formListagem:tabela">
+						<p:confirm header="Confirmação" message="Deseja excluir a pessoa? "
+							icon="ui-icon-alert" />
+						<f:attribute name="pessoaSelecionada" value="#{pessoa}"/>
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil" 
+					actionListener="#{pessoaBean.editar}"
+					update=":mensagem :formCadastro:painel :formListagem:tabela"
+					oncomplete="PF('dialogo').show();">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+							<f:attribute name="pessoaSelecionada" value="#{pessoa}"/>
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<!-- +++++++DIALOGO EXCLUIR -->
+			<p:confirmDialog global="true">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</p:panel>
+	</h:form>
+
+	<!-- +++++++++++CADASTRAR PESSOAS+++++++++++++++++++++++++++++++++++++ -->
+	<p:dialog header="Pessoas - Cadastro" widgetVar="dialogo"
+		draggable="false" resizable="false" global="true" closable="false">
+		<h:form id="formCadastro">
+			<h:panelGrid id="painel" columns="2">
+				<p:outputLabel value="Código:" />
+				<p:inputText  value="#{pessoaBean.pessoa.codigo}" readonly="true" size="5"/>
+				
+				<p:outputLabel  value="Nome:" />
+				<p:inputText value="#{pessoaBean.pessoa.nome}" />
+				
+				<p:outputLabel  value="Login:" />
+				<p:inputText  value="#{pessoaBean.pessoa.nomeusuario}" />
+			</h:panelGrid>
+
+			<h:panelGrid columns="2">
+				<p:commandButton value="Salvar"
+					actionListener="#{pessoaBean.salvar}"
+					update=":mensagem :formCadastro:painel :formListagem:tabela" />
+				<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+	</ui:define>
+</ui:composition>
+
+<!-- DIALOGO DE EXCLUSÃO
+Tem que está dentro de um formulário
+ -->
+
+<!-- SelectOneMenu de estados.
+ converter="omnifaces.SelectItemsConverter": signica aquela conversão de Bigdecimal para 
+ String para  poder salvar o código
+  -->
+
+
+<!-- ResetInputAjaxActionListener: Corrige erro ao tentar pedir um novo e editar
+  algo. Para que não  fique solicitando obrigatóriedade.
+      
+      <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+  
+   -->

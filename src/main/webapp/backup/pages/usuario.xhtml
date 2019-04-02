@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="metadata">
+	</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="formListagem">
+			<p:panel header="Usuários - Listagens">
+
+				<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+					paginator="true" rows="6"
+					value="#{usuarioBean.listarUsuarios}" var="usuario"
+					filteredValue="#{usuarioBean.usuariosFiltrados}">
+					<f:facet name="header">
+						<p:commandButton value="Novo" actionListener="#{usuarioBean.novo}"
+						oncomplete="PF('dialogo').show();"
+						update=":mensagem :formCadastro:painel"
+						>
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column headerText="Nome" sortBy="" filterBy="#{usuario.pessoa.nome}">
+						<p:outputLabel value="#{usuario.pessoa.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Usuario" sortBy=""
+						filterBy="#{usuario.pessoa.nomeusuario}">
+						<h:outputText value="#{usuario.pessoa.nomeusuario}" />
+					</p:column>
+
+					<p:column headerText="Tipo" styleClass="centralizar"
+					sortBy="#{usuario.tipoFormatado}" filterBy="#{usuario.tipoFormatado}"
+					>
+						<h:outputText value="#{usuario.tipoFormatado}"/>
+					</p:column>
+
+					<p:column headerText="Opções" width="75" styleClass="centralizar">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{usuarioBean.excluir}"
+						update=":mensagem :formListagem:tabela"
+					>
+							<p:confirm header="Confirmação"
+							message="Deseja excluir um usuário" icon="ui-icon-alert" 
+							/>
+							<f:attribute name="usuarioSelecionado" value="#{usuario}"/>
+					</p:commandButton>
+
+						<p:commandButton icon="ui-icon-pencil" actionListener="#{usuarioBean.editar}"
+						update=":mensagem :formListagem:tabela :formCadastro:painel"
+						oncomplete="PF('dialogo').show();"
+						>
+							<f:attribute name="usuarioSelecionado" value="#{usuario}"/>
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</p:column>
+					
+				</p:dataTable>
+				<!-- +++++++DIALOGO EXCLUIR -->
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+					 />
+					 
+					<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+					 />
+				</p:confirmDialog>
+			</p:panel>
+		</h:form>
+
+		<!-- +++++++++++++++cadastrar usuários++++++++++++++++++++++++++++++++++ -->
+		<p:dialog header="Usuários - Cadastro" widgetVar="dialogo"
+		draggable="false" resizable="false" global="true" closable="false"
+		>
+			<h:form id="formCadastro">
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel value="Pessoa:" />
+					<p:selectOneMenu  filter="true"
+						value="#{usuarioBean.usuario.pessoa}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Selecione uma pessoa" />
+						<f:selectItems value="#{usuarioBean.listarPessoas}" var="pessoa"
+							itemValue="#{pessoa}" itemLabel="#{pessoa.nome}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel  value="Senha:" />
+					<p:password value="#{usuarioBean.usuario.senha}" />
+	
+
+					<p:outputLabel value="Tipo:" />
+					<p:selectOneRadio  value="#{usuarioBean.usuario.tipo}"
+						required="true" requiredMessage="O campo 'Tipo' ´obrigatório">
+						<f:selectItem itemValue="A" itemLabel="Administrador" />
+						<f:selectItem itemValue="G" itemLabel="Gerente" />
+						<f:selectItem itemValue="B" itemLabel="Balconista" />
+					</p:selectOneRadio>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						update=":mensagem :formCadastro:painel :formListagem:tabela"
+						actionListener="#{usuarioBean.salvar}" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();"/>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
