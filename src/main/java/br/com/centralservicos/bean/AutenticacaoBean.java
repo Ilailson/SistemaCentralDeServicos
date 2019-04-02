@@ -37,6 +37,7 @@ public class AutenticacaoBean implements Serializable{
 
 	private  Usuario usuario;
 	private  Usuario usuarioLogado;
+	HttpSession session;
 	
 	public Usuario getUsuario() {
 		return usuario;
@@ -69,7 +70,10 @@ public void iniciar() {
 }
 
 
-
+/**
+ * Responsável por realizar a autenticação do usuário e invalidar a sessão em trinta minutos 
+ * se não utilizarem. 
+ */
 public void autenticar() {
 	UsuarioDAO usuarioDAO = new UsuarioDAO();
 	usuarioLogado = usuarioDAO.autenticar(usuario.getPessoa().getNomeusuario(), usuario.getSenha());
@@ -82,6 +86,8 @@ public void autenticar() {
 		}
 		
 		Faces.redirect("./pages/chefia.xhtml");
+		
+		session.setMaxInactiveInterval(1800); //sessão irá encerrar em 30 minutos
 		
 	} catch (IOException e) {
 		e.printStackTrace();
@@ -117,7 +123,7 @@ public String logout() {
         Messages.addGlobalError("Erro ao tentar redirecionar para página solicitada ao efetuar Logout: ");
     	
     }
-    HttpSession session = (HttpSession) context.getSession(false);
+   session = (HttpSession) context.getSession(false);
     session.invalidate();
 
     return "logout";
